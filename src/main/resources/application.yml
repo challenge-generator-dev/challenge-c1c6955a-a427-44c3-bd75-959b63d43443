@@ -1,0 +1,64 @@
+spring:
+  application:
+    name: investment-portfolio
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/investment_portfolio}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: ${DB_POOL_SIZE:20}
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: ${DDL_AUTO:none}
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          batch_size: 50
+        order_inserts: true
+        order_updates: true
+  mvc:
+    async:
+      request-timeout: 30000
+
+server:
+  port: ${SERVER_PORT:8080}
+  tomcat:
+    threads:
+      max: ${TOMCAT_THREADS_MAX:200}
+    connection-timeout: 20000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
+application:
+  max-requests-per-second: ${MAX_REQUESTS_PER_SECOND:1500}
+  idempotency-key-ttl: ${IDEMPOTENCY_KEY_TTL:86400} # 24 horas en segundos
+  thread-pool:
+    core-size: ${THREAD_POOL_CORE_SIZE:50}
+    max-size: ${THREAD_POOL_MAX_SIZE:100}
+    queue-capacity: ${THREAD_POOL_QUEUE_CAPACITY:1000}
+
+logging:
+  level:
+    root: INFO
+    com.investment.portfolio: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.springframework.web: INFO
+    org.springframework.orm: INFO
+    org.springframework.transaction: INFO
